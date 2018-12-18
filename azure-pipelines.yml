@@ -5,34 +5,8 @@ trigger:
 pool:
   vmImage: 'Ubuntu 16.04'
 
-variables:
-  registryServerName: '$(registryName).azurecr.io'
-  imageName: '$(projectName)'
-  # define 4 more variables: projectName, registryName, registryLogin and registryPassword in the build pipeline in UI
-
 steps:
-- bash: docker build -f $(system.defaultWorkingDirectory)/Dockerfile -t $(registryServerName)/$(imageName):$(build.buildId) -t $(registryServerName)/$(imageName):latest $(system.defaultWorkingDirectory)/$(projectName)
-  displayName: 'docker build'
-
-- bash: docker login $(registryServerName) -u $(registryLogin) -p $(registryPassword)
-  displayName: 'docker login'
-
-- bash: |
-
-    docker push $(registryServerName)/$(imageName):$(build.buildId)
-    docker push $(registryServerName)/$(imageName):latest
-  displayName: 'docker push'
-
-- task: HelmInstaller@0
-  displayName: 'Install Helm 2.11.0'
-  inputs:
-    helmVersion: 2.11.0
-
-- bash: helm init --client-only --wait
-  displayName: 'helm init'
-
-- bash: helm package --version $(build.buildId) --destination $(build.artifactStagingDirectory) $(system.defaultWorkingDirectory)/charts/$(projectName)
-  displayName: 'helm package'
-
-- bash: az acr helm push -n $(registryName) -u $(registryLogin) -p $(registryPassword) $(build.artifactStagingDirectory)/$(projectName)-$(build.buildId).tgz
-  displayName: 'az acr helm push'
+- script: |
+    docker build -t $(dockerId).azurecr.io/$(imageName) .
+    docker login -u $(dockerId) -p $(pswd) $(dockerId).azurecr.io
+    docker push $(dockerId).azurecr.io/$(imageName)
