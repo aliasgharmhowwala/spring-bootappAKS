@@ -1,0 +1,64 @@
+/*
+  Author: garadha@microsoft.com
+  Dated: 09-23-2018
+  Description:
+  This pipeline defines the stages and steps for building and deploying the 'po-service' application
+  to AKS.
+  Before running a build, make sure the following pre-requisites are satisfied.
+  1.  Make sure 'Build Timestamp' Jenkins Plug-in is installed
+  2.  Define environment variable - ACR_LOGINSERVER
+  3.  Define a credential with Jenkins provider - acr-credentials
+  4.  Define a k8s KubeConfig credential with Plain Credentials provider - k8s-credentials
+  5.  Specify the correct MVN repository mount location (host path) for the Maven container
+*/
+node {
+	def app
+
+	stage('Clone repository') {
+		sh 'echo "Cloning GitHub repository ..."'
+		checkout scm
+	}
+
+	stage('Update MySQL SVC and Namespace') {
+		sh 'echo "Updating MySQL co-ordinates ..."'
+		sh 'sed -i "s/__svc.name.k8s.namespace__/mysql.development/g" ./src/main/resources/application.properties'
+	}
+
+	docker.image('maven:3-alpine').inside('-v $HOME/.m2:/root/.m2') {
+		stage('Build po-service Application') {
+			sh 'echo "Building application ..."'
+			sh 'mvn -DskipTests clean package'
+		}
+	}
+
+	/* stage('Print Data ... ') {
+		sh 'echo "Present working directory ..."'
+		sh 'pwd'
+	} */ 
+
+	stage('Build Application Container Image') {
+		sh 'echo "Building application container image ..."'
+		app = docker.build("po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}",". -f ./src/Dockerfile")
+		// Don't need to tag image.  'docker.withRegistry' does it automatically!
+		// sh "docker tag po-service:${env.Build_TIMESTAMP}.${env.BUILD_ID} ${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
+	}
+
+	stage('Push Container Image To ACR') {
+		sh 'echo "Pushing container image to ACR ..."'
+		docker.withRegistry("https://${env.ACR_LOGINSERVER}",'acr-credentials') {
+			app.push()
+			app.push("latest")
+		}
+	}
+
+	stage('Re-deploy Application Container to AKS') {
+		sh 'echo "Using Kubectl to upgrade application (redeploy) on AKS"'
+		withKubeConfig(
+			caCertificate: '',
+			contextName: 'dev',
+			credentialsId: 'aks-credentials',
+			serverUrl: 'https://akscluster-cicd-9974af20.hcp.westus.azmk8s.io:443') {
+			sh "kubectl set image deployment/po-service po-service=${env.ACR_LOGINSERVER}/po-service:${env.BUILD_TIMESTAMP}.${env.BUILD_ID}"
+		}
+	}
+}

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: po-service
+  labels:
+    app: po-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: po-service
+  template:
+    metadata:
+      labels:
+        app: po-service
+    spec:
+      volumes:
+      - name: mysqlcm
+        configMap:
+          name: mysql-db-name
+      - name: mysqlse
+        secret:
+          secretName: mysql-secret
+      containers:
+      - name: po-service
+        image: sep21taacr.azurecr.io/po-service:__Build.BuildNumber__
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: mysqlcm
+          mountPath: /etc/config
+        - name: mysqlse
+          mountPath: /etc/vol-secrets

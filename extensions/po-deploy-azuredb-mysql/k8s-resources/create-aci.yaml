@@ -1,0 +1,45 @@
+apiVersion: '2018-10-01'
+location: westus
+name: po-service-aci-group
+properties:
+  containers:
+  - name: po-service-aci
+    properties:
+      command:
+      - /bin/bash
+      - -c
+      - java -Dspring.datasource.url="jdbc:mysql://hostname:3306/dbname?useSSL=true&requireSSL=true" -jar ./po-rest-service-1.0.jar
+      image: mtcslabtest.azurecr.io/po-service:latest
+      ports:
+      - port: 8080
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.0
+      volumeMounts:
+      - mountPath: /etc/vol-secrets
+        name: secretvolume1
+      - mountPath: /etc/config
+        name: secretvolume2
+  osType: Linux
+  restartPolicy: OnFailure
+  ipAddress:
+    dnsNameLabel: po-service-MyInitial
+    type: Public
+    ports:
+    - protocol: tcp
+      port: '8080'
+  volumes:
+  - name: secretvolume1
+    secret:
+      username.properties: 'Base64 encoded value of : mysql.user=value'
+      password.properties: 'Base64 encoded value of : mysql.password=value'
+  - name: secretvolume2
+    secret:
+      mysqldb.properties: 'Any base64 encoded value. This value is not used'
+  imageRegistryCredentials:
+  - server: mtcslabtest.azurecr.io
+    username: mtcslabtest
+    password: 'Substitute value of ACR password'
+tags: {}
+type: Microsoft.ContainerInstance/containerGroups
