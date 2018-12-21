@@ -49,6 +49,8 @@ spec:
           mountPath: /etc/config
         - name: mysqlse
           mountPath: /etc/vol-secrets
+      imagePullSecrets:
+      - name: springboot
 ---
 kind: Service
 apiVersion: v1
