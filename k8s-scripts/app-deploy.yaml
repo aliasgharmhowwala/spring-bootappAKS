@@ -12,8 +12,8 @@ metadata:
   name: mysql-secret
 type: Opaque
 data:
-  username.properties: springboot@sqldatabasespringboot
-  password.properties: 786Mysql110.
+  username.properties: c3ByaW5nYm9vdEBzcWxkYXRhYmFzZXNwcmluZ2Jvb3Q=
+  password.properties: Nzg2TXlzcWwxMTAu
 ---
 apiVersion: apps/v1
 kind: Deployment
