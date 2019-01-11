@@ -29,6 +29,7 @@ RUN  chmod +x /tmp/Maven.sh
 
 # Change working directory
 WORKDIR /home/apps
+RUN mvn clean install
 
 # For Spring Boot, there should only be 1 fat jar
 ADD ./target/po-rest-service-1.0.jar /home/apps/po-rest-service-1.0.jar
