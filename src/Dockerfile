@@ -8,6 +8,10 @@ MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 
 # Builder version
 ENV BUILDER_VERSION 1.0
+ENV MAVEN_VERSION 3.5.3
+ENV MAVEN_HOME /usr/lib/mvn
+ENV PATH $MAVEN_HOME/bin:$PATH
+
 LABEL io.k8s.description="Base image for running a Java Spring Boot application" \
       io.k8s.display-name="Purchase Order (RESTFul) Service Spring Boot Application 1.0" \
       io.openshift.expose-services="8080:http" \
@@ -25,9 +29,12 @@ RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     mkdir -p /home/apps
 ## Added for maven    
 RUN echo $pwd
+RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
+&& tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz \
+&&   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-ADD Maven.sh /home/apps
-RUN  chmod +x /home/apps/Maven.sh
+RUN mvn --version
+
 
 # Change working directory
 WORKDIR /home/apps
