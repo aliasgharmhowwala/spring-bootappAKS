@@ -23,6 +23,9 @@ RUN yum -y update; \
 RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     yum clean all -y && \
     mkdir -p /home/apps
+## Added for maven    
+ADD Maven.sh /tmp
+RUN  chmod +x /tmp/Maven.sh
 
 # Change working directory
 WORKDIR /home/apps
