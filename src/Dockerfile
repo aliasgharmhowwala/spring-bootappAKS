@@ -9,6 +9,7 @@ MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 RUN yum install -y wget
 
 # Builder version
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV BUILDER_VERSION 1.0
 ENV MAVEN_VERSION 3.5.3
 ENV MAVEN_HOME /usr/lib/mvn
@@ -29,11 +30,13 @@ RUN yum -y update; \
 RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     yum clean all -y && \
     mkdir -p /home/apps
+    # checking java version
+    RUN java -version && echo $JAVA_HOME
 ## Added for maven    
 RUN echo $pwd
 RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
 && tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz \
-&&   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
+&& mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
 RUN mvn -version
 
