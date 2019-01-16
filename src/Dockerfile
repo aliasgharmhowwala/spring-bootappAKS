@@ -35,7 +35,7 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
 && tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz \
 &&   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-RUN mvn --version
+RUN mvn -version
 
 
 # Change working directory
