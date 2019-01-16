@@ -6,7 +6,7 @@
 FROM centos:latest
 MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 
-RUN yum install -y wget
+RUN yum install -y wget which
 
 # Builder version
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
@@ -32,6 +32,8 @@ RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     mkdir -p /home/apps   
     # checking java version
     RUN java -version 
+    # checking which java
+    RUN which java
 ## Added for maven    
 RUN echo $pwd
 RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
