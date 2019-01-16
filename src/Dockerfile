@@ -9,7 +9,7 @@ MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 RUN yum install -y wget which
 
 # Builder version
-ENV JAVA_HOME /usr/bin/java
+ENV JAVA_HOME /usr/lib/jvm/default-java
 ENV BUILDER_VERSION 1.0
 ENV MAVEN_VERSION 3.5.3
 ENV MAVEN_HOME /usr/lib/mvn
