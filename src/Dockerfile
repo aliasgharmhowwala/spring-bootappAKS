@@ -27,13 +27,11 @@ RUN yum -y update; \
     yum clean all -y
 
 # Install OpenJDK 1.8, create required directories.
-#RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
-    #yum clean all -y && \
-    #mkdir -p /home/apps
-    #Addinh open-jdk-1.8
-RUN yum install -y java-1.8.0-openjdk-devel    
+RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
+    yum clean all -y && \
+    mkdir -p /home/apps   
     # checking java version
-    RUN java -version && echo $JAVA_HOME &&  mkdir -p /home/apps
+    RUN java -version 
 ## Added for maven    
 RUN echo $pwd
 RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
