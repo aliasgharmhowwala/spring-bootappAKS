@@ -6,6 +6,8 @@
 FROM centos:latest
 MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 
+RUN yum install -y wget
+
 # Builder version
 ENV BUILDER_VERSION 1.0
 ENV MAVEN_VERSION 3.5.3
