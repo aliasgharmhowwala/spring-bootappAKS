@@ -34,6 +34,7 @@ RUN yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     RUN java -version 
     # checking which java
     RUN which java
+RUN echo $JAVA_HOME/bin/javac -version
 ## Added for maven    
 RUN echo $pwd
 RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
